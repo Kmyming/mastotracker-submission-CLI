@@ -1,0 +1,15 @@
+Instructions:
+1. Make sure you have node.js installed.
+2. Run npm install --save mastodon-api
+3. Run npm install envvar 
+4. Run npm install chalk
+5. Run node index.js to run the script
+
+For mass account creation:
+1. Create a document (data.json) in the same directory as the JS file (if not created).
+  - Key in emails and name pairs for each account. ensure the order is the same 
+  - Refer to https://pastebin.com/LbuP9bMK for the formatting.
+  - This document should have a maximum of 5 names/emails pairs at one time.
+2. It will generate an account, and a password String to a new file (data.txt)
+3. This file will be auto generated if it doesnt exist.
+4. Rate Limit is 5reqs/30min. It should take about 6h synchronously for 61 students
