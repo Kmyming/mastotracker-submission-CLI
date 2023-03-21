@@ -121,7 +121,11 @@ rl.question(
                 userInput = string;
                 id = data.id;
                 console.log("\nid of account:" + id);
-                console.log("Student Class: " + data.roles[0].name);
+                if (data.roles == ""){
+                  console.log("Student not assigned class.");
+                } else {
+                  console.log("Student Class: " + data.roles[0].name);
+                }
               }
               rl.close();
             });
@@ -212,7 +216,7 @@ rl.question(
             rl.close();
         });
       } else if ( userInput == "LOOK AT SUBMISSIONS OF A CLASS" || userInput == "look at submissions of a class" || userInput == "4") {
-        rl.question("\nclass: ", function (string) {
+        rl.question("\nclass(case-sensitive): ", function (string) {
           userclass = string;
           rl.question("\nsubmission tag: ", function (string) {
             searchtag = string;
@@ -222,44 +226,38 @@ rl.question(
               } else {
                   console.log();
                   console.log("FINDING USERS IN CLASS...");
+                  // console.log(data);
                   for (let i in data){
+                    id = data[i].id;
+                    if (data[i].role.name == userclass) {
                       const params = {
-                          id: data[i].id,
-                          tagged: userclass,
-                        };
-                        M.get("accounts/:id/statuses", params, (error, datas) => {
-                          if (error) {
-                            console.error(error);
-                          } else if (datas == "") {
-
-                          } else {
-                            const params = {
-                              id: data[i].id,
-                              tagged: searchtag,
-                            };
-                            M.get("accounts/:id/statuses", params, (error, datas) => {
-                              if (error) {
-                                console.error(error);
-                              } else if (datas == "") {
-                                console.log('USERNAME:' + data[i].username + ", SUBMISSION TAG: " + searchtag + chalk.red(" NOT FOUND! ") + "Student did not submit work.");
-                              } else {
-                                datecreated = datas[0].created_at;
-                                console.log('USERNAME:' + data[i].username + ", SUBMISSION TAG: " + searchtag + chalk.green(" FOUND! ") + "Student has submitted work. " + "Student submitted work at: " + datecreated);
-                                console.log('POST URL: '+ datas[0].url);
-                                if (datas[0].media_attachments == ''){
-                                  console.log('MEDIA ATTTACHMENT: No media attached');
-                                }else{
-                                  console.log('MEDIA ID: ' + datas[0].media_attachments[0].id);
-                                  console.log('MEDIA URL: ' + datas[0].media_attachments[0].url);
-                                  console.log();
-                                }
-                              }
-                            });
+                        id: data[i].id,
+                        tagged: searchtag,
+                      };
+                      M.get("accounts/:id/statuses", params, (error, datas) => {
+                        if (error) {
+                          console.error(error);
+                        } else if (datas == "") {
+                          console.log('USERNAME:' + data[i].username + ", SUBMISSION TAG: " + searchtag + chalk.red(" NOT FOUND! ") + "Student did not submit work.");
+                        } else {
+                          datecreated = datas[0].created_at;
+                          console.log('USERNAME:' + data[i].username + ", SUBMISSION TAG: " + searchtag + chalk.green(" FOUND! ") + "Student has submitted work. " + "Student submitted work at: " + datecreated);
+                          console.log('POST URL: '+ datas[0].url);
+                          if (datas[0].media_attachments == ''){
+                            console.log('MEDIA ATTTACHMENT: No media attached');
+                          }else{
+                            console.log('MEDIA ID: ' + datas[0].media_attachments[0].id);
+                            console.log('MEDIA URL: ' + datas[0].media_attachments[0].url);
+                            console.log();
                           }
-                      }); 
+                        }
+                      });
+                    } else if (data[i].role.name != userclass){
+
                   } 
+                }
               }
-          });
+            });
             rl.close();
           });
         });
