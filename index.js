@@ -262,8 +262,8 @@ rl.question(
           });
         });
     }else if ( userInput == "check classes" || userInput == "CHECK CLASSES" || userInput == "5") {
-      rl.question("\ntag of class: " , function (string){
-        userInput = string;
+      rl.question("\nClass Role (case-sensitive): " , function (string) {
+        userclass = string;
           M.get('admin/accounts', (error, data) => {
               if (error){
                   console.error(error);
@@ -272,39 +272,29 @@ rl.question(
                   console.log("GETTING ALL STUDENTS IN THE CLASS...");
                   console.log();
                   let index = 1;
-                  console.log('FOR CLASS: ' + userInput);
+                  console.log('FOR CLASS: ' + userclass);
                   const myPromise = new Promise ((resolve,reject) =>{ 
                     for (let i in data){
-                    const params = {
-                        id: data[i].id,
-                        tagged: userInput,
-                      };
-                      M.get("accounts/:id/statuses", params, (error, datas) => {
-                if (error) {
-                  console.error(error);
-                  reject(error);
-                } else if (datas == ''){
-                } else {
-                  console.log(index + '. username:' + data[i].username + chalk.green(" FOUND! "));                              
-                  index++;
-                  const user = {
-                    username: data[i].username,
-                    id: data[i].id,
-                  }
-                  students["user" + i] = user;
-                  
-                }
-              }); 
-              } 
-              setTimeout(() => {
-                resolve(students);  // Resolve the promise after 1 second with a value
-              }, 1000);
-          })
-          myPromise.then((value)=>{
-            console.log(value);
-            console.log('EXITING...')
-            //resolve(students);
-          });
+                      if (data[i].role.name == userclass){
+                         console.log(index + '. username:' + data[i].username + chalk.green(" FOUND! "));                              
+                         const user = {
+                           username: data[i].username,
+                           id: data[i].id,
+                         }
+                         students["user" + index] = user;
+                         index++;
+                       }  else if (data[i].role.name != userclass) {
+                        
+                       } 
+                      } 
+                      setTimeout(() => {
+                        resolve(students);  // Resolve the promise after 1 second with a value
+                      }, 1000);
+                    }).then((value)=>{
+                      console.log(value);
+                      console.log('EXITING...')
+                      //resolve(students);
+                    });
                     /*M.get("accounts/:id/statuses", params, (error, datas) => {
                       if (error) {
                         console.error(error);
