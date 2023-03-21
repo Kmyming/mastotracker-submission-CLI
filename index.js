@@ -109,7 +109,23 @@ rl.question(
         userInput = string;
       rl.question("\nAre you checking for student's submission or class?(class/submission):", function(string){
         searchtype = string;
-        if (searchtype == 'class'|| searchtype == 'CLASS' || searchtype == 'submission'|| searchtype == 'SUBMISSION'){
+        if (searchtype == 'class'|| searchtype == 'CLASS'){
+            const params = {
+              acct: userInput,
+            };
+            M.get("accounts/lookup", params, (error, data) => {
+              if (error) {
+                console.log("\nUSER NOT FOUND. EXITING...\n");
+                console.error(error);
+              } else {
+                userInput = string;
+                id = data.id;
+                console.log("\nid of account:" + id);
+                console.log("Student Class: " + data.roles[0].name);
+              }
+              rl.close();
+            });
+        } else if (searchtype == 'submission'|| searchtype == 'SUBMISSION'){
           rl.question("\ntag to search (exlcude ' # '): ", function (string) {
             searchtag = string;
             const params = {
@@ -131,22 +147,10 @@ rl.question(
                   if (error) {
                     console.error(error);
                   } else if (datas == "") {
-                    if (searchtype == 'class'|| searchtype == 'CLASS'){
-                      console.log("Student is" + chalk.red(" NOT FOUND! ") + "in class: " + searchtag);
-                      console.log();
-                      console.log("Task Completed. EXITING...");
-                    }else if (searchtype == 'submission'|| searchtype == 'SUBMISSION'){
                       console.log("SUBMISSION TAG:"+ searchtag + chalk.red(" NOT FOUND! ") + "Student did not submit work.");
                       console.log();
                       console.log("Task Completed. EXITING...");
-                    }
-                    
                   } else {
-                    if (searchtype == 'class'|| searchtype == 'CLASS'){
-                      console.log("Student is" + chalk.green(" FOUND! ") + "in class: " + searchtag);
-                      console.log();
-                      console.log("Task Completed. EXITING...");
-                    }else if (searchtype == 'submission'|| searchtype == 'SUBMISSION'){
                     console.log();
                     console.log('USERNAME:' + data.username + ", SUBMISSION TAG: " + searchtag + chalk.green(" FOUND! ") + "Student has submitted work. " + "Student submitted work at: " + datas[0].created_at);
                     console.log('POST URL: '+ datas[0].url);
@@ -159,15 +163,13 @@ rl.question(
                       console.log();
                     }
                     console.log("data printed. EXITING...");
-                    }
                   }
                 });
               }
             });
             rl.close();
           });
-        }
-        else{
+        } else{
           console.log('INVALID INPUT. EXITING...')
           rl.close();
         }
@@ -477,8 +479,17 @@ rl.question(
                 console.error(error);
                 reject(error);
               } else{
-                resolve("ACCOUNT CREATED");
-                //when git pushing, REMOVE all data from data.json
+                const params ={
+                  id: data.id,
+                };
+                M.post("admin/accounts/:id/approve", params, (error, data) => {
+                  if(error){
+                    console.error(error);
+                  }else{
+                    resolve("ACCOUNT CREATED");
+                    //when git pushing, REMOVE all data from data.json
+                  }
+                })
               }
             })
           }).then((value) =>{
