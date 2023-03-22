@@ -467,17 +467,27 @@ rl.question(
                 console.error(error);
                 reject(error);
               } else{
-                const params ={
-                  id: data.id,
+                const params = {
+                  acct: username,
                 };
-                M.post("admin/accounts/:id/approve", params, (error, data) => {
-                  if(error){
+                M.get("accounts/lookup", params, (error, data) => {
+                  if (error){
                     console.error(error);
                   }else{
-                    resolve("ACCOUNT CREATED");
-                    //when git pushing, REMOVE all data from data.json
+                    const params = {
+                      id: data.id,
+                    };
+                    M.post("admin/accounts/:id/approve", params, (error, data) => {
+                      if(error){
+                        console.error(error);
+                      }else{
+                        console.log('ACCOUTN APPROVED.');
+                        resolve("ACCOUNT CREATED");
+                        //when git pushing, REMOVE all data from data.json
+                      }
+                    })
                   }
-                })
+                });
               }
             })
           }).then((value) =>{
