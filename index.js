@@ -481,7 +481,7 @@ rl.question(
                       if(error){
                         console.error(error);
                       }else{
-                        console.log('ACCOUTN APPROVED.');
+                        console.log('ACCOUNT APPROVED.');
                         resolve("ACCOUNT CREATED");
                         //when git pushing, REMOVE all data from data.json
                       }
